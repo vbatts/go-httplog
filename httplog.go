@@ -13,7 +13,7 @@ func LogRequest(r *http.Request, statusCode int) {
 	var user_agent string
 
 	user_agent = ""
-	addr = r.RemoteAddr
+	addr = RealIP(r)
 
 	for k, v := range r.Header {
 		if k == "User-Agent" {
@@ -32,4 +32,21 @@ func LogRequest(r *http.Request, statusCode int) {
 		user_agent,
 		statusCode,
 		r.ContentLength)
+}
+
+func RealIP(r *http.Request) (ip string) {
+	ip = r.RemoteAddr
+
+	port_pos := strings.LastIndex(ip, ":")
+	if port_pos != -1 {
+		ip = ip[0:port_pos]
+	}
+
+	for k, v := range r.Header {
+		if k == "X-Forwarded-For" {
+			ip = strings.Join(v, " ")
+		}
+	}
+
+	return ip
 }
