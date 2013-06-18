@@ -7,6 +7,17 @@ import (
 	"time"
 )
 
+// for debugging request headers
+func LogHeaders(r *http.Request) {
+	fmt.Printf("HEADERS:\n")
+	for k, v := range r.Header {
+		fmt.Printf("\t%s\n", k)
+		for i, _ := range v {
+			fmt.Printf("\t\t%s\n", v[i])
+		}
+	}
+}
+
 /* kindof a common log type output */
 func LogRequest(r *http.Request, statusCode int) {
 	var addr string
