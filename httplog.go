@@ -7,6 +7,24 @@ import (
 	"time"
 )
 
+var (
+  /* This default icon is empty with a long lived cache */
+	DefaultFavIcon FavIcon = defaultFavIcon{}
+)
+
+type defaultFavIcon struct {
+}
+
+func (dfi defaultFavIcon) Route(w http.ResponseWriter, r *http.Request) {
+	LogRequest(r, 200)
+	w.Header().Set("Cache-Control", "max-age=315360000")
+}
+
+/* simple interface for a favicon */
+type FavIcon interface {
+	Route(w http.ResponseWriter, r *http.Request)
+}
+
 // for debugging request headers
 func LogHeaders(r *http.Request) {
 	fmt.Printf("HEADERS:\n")
