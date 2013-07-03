@@ -15,14 +15,14 @@ var (
 type defaultFavIcon struct {
 }
 
-func (dfi defaultFavIcon) Route(w http.ResponseWriter, r *http.Request) {
+func (dfi defaultFavIcon) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	LogRequest(r, 200)
 	w.Header().Set("Cache-Control", "max-age=315360000")
 }
 
 /* simple interface for a favicon */
 type FavIcon interface {
-	Route(w http.ResponseWriter, r *http.Request)
+	ServeHTTP(w http.ResponseWriter, r *http.Request)
 }
 
 // for debugging request headers
