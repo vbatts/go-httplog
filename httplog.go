@@ -55,7 +55,7 @@ func LogRequest(r *http.Request, statusCode int) {
 
 	fmt.Printf("%s - - [%s] \"%s %s\" \"%s\" %d %d\n",
 		addr,
-		time.Now(),
+		time.Now().Format(time.RFC1123Z),
 		r.Method,
 		r.URL.String(),
 		user_agent,
