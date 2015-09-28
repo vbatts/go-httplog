@@ -8,7 +8,7 @@ import (
 )
 
 var (
-  /* This default icon is empty with a long lived cache */
+	/* This default icon is empty with a long lived cache */
 	DefaultFavIcon FavIcon = defaultFavIcon{}
 )
 
@@ -63,19 +63,27 @@ func LogRequest(r *http.Request, statusCode int) {
 		r.ContentLength)
 }
 
-func RealIP(r *http.Request) (ip string) {
-	ip = r.RemoteAddr
+func RealIP(r *http.Request) string {
+	rip := RealIPs(r)
+	return rip[len(rip)]
+}
+
+func RealIPs(r *http.Request) (ips []string) {
+	ip := r.RemoteAddr
 
 	port_pos := strings.LastIndex(ip, ":")
 	if port_pos != -1 {
 		ip = ip[0:port_pos]
 	}
-
-	for k, v := range r.Header {
-		if k == "X-Forwarded-For" {
-			ip = strings.Join(v, " ")
-		}
+	if ip != "" {
+		ips = append(ips, ip)
 	}
 
-	return ip
+	val := r.Header.Get("X-Forwarded-For")
+	if val != "" {
+		for _, ip := range strings.Split(val, ", ") {
+			ips = append(ips, ip)
+		}
+	}
+	return ips
 }
