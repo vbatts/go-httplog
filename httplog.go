@@ -65,7 +65,7 @@ func LogRequest(r *http.Request, statusCode int) {
 
 func RealIP(r *http.Request) string {
 	rip := RealIPs(r)
-	return rip[len(rip)]
+	return rip[len(rip)-1]
 }
 
 func RealIPs(r *http.Request) (ips []string) {
