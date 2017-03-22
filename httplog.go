@@ -2,9 +2,12 @@ package httplog
 
 import (
 	"fmt"
+	"net"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/Sirupsen/logrus"
 )
 
 var (
@@ -65,21 +68,26 @@ func LogRequest(r *http.Request, statusCode int) {
 
 func RealIP(r *http.Request) string {
 	rip := RealIPs(r)
+	if len(rip) == 0 {
+		return ""
+	}
 	return rip[len(rip)-1]
 }
 
 func RealIPs(r *http.Request) (ips []string) {
-	ip := r.RemoteAddr
-
-	port_pos := strings.LastIndex(ip, ":")
-	if port_pos != -1 {
-		ip = ip[0:port_pos]
+	logrus.Infof("httplog: RemoteAddr: %q", r.RemoteAddr)
+	ip, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		logrus.Errorf("httplog: %q", err)
+		return nil
 	}
+
 	if ip != "" {
 		ips = append(ips, ip)
 	}
 
 	val := r.Header.Get("X-Forwarded-For")
+	logrus.Infof("httplog: X-Forwarded-For: %q", val)
 	if val != "" {
 		for _, ip := range strings.Split(val, ", ") {
 			ips = append(ips, ip)
